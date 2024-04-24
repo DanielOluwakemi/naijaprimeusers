@@ -45,7 +45,7 @@ public class LoginServiceImpl implements LoginService {
         ResponseDTO response = new ResponseDTO();
 
         //Validation
-        if(login.getUsername() == null || login.getUsername().isBlank()) {
+        if(login.getUsername() == null || login.getUsername().isBlank() || login.getPassword() == null || login.getPassword().isBlank()) {
             response.setStatus("EMPTY_TEXTFIELD");
             response.setMessage("Fill Empty Textfield(s)");
             return response;
@@ -67,16 +67,12 @@ public class LoginServiceImpl implements LoginService {
             int sixDigitCode = codeGenerator.generateRandomSixDigitCode();
             login.setCreatedTime(dateConverter.getCurrentTimestamp());
             login.setDeleteFlag(0);
-//            if(login.getPassword() == null || login.getPassword().isBlank()) login.setPassword(hashPassword.hashPass(coupon));
-//            else {
-                if(!passwordValidator.validate(login.getPassword())){
-                    response.setStatus("PASSWORD_INVALID");
-                    response.setMessage("Password Must Fulfill Password Policy!");
-                    return response;
-                }
-                login.setPassword(hashPassword.hashPass(login.getPassword()));
-//            }
-            loginRepository.save(login);
+            if(!passwordValidator.validate(login.getPassword())){
+                response.setStatus("PASSWORD_INVALID");
+                response.setMessage("Password Must Fulfill Password Policy!");
+                return response;
+            }
+            login.setPassword(hashPassword.hashPass(login.getPassword()));
 
             response.setStatus("SUCCESS");
             response.setMessage("Added Login Successfully");
@@ -103,6 +99,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    public ResponseDTO verifyCode(Login login, int code) {
+        return null;
+    }
+
+    @Override
     public LoginResponseDTO login(AccessDTO accessDTO) {
         log.info("Do Login");
         LoginResponseDTO response = new LoginResponseDTO();
@@ -119,7 +120,7 @@ public class LoginServiceImpl implements LoginService {
             Login login = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(accessDTO.getUsername(), 0);
             ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
             Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
-            if(login == null || creator == null) {
+            if((login == null || creator == null) && (login == null || viewer == null)) {
                 response.setStatus("ACCOUNT_NONEXISTS");
                 response.setMessage("User Account Does Not Exist!");
                 return response;
@@ -131,17 +132,21 @@ public class LoginServiceImpl implements LoginService {
                 response.setMessage("Username or Password Incorrect!");
                 return response;
             }
-            
-            //Successful (Send Roles and Permissions And Other Details)
-            String roleID = "0";
-//            if(personalCompany.getRoleID() != null) roleID = personalCompany.getRoleID();
-//            login.setToken(this.generateEncryptedLoginToken(login.getOrgID(), "" + login.getEmpID(), roleID));
+
+
             login.setCreatedTime(dateConverter.getCurrentTimestamp());
             loginRepository.save(login);
 
             response.setStatus("SUCCESS");
             response.setMessage("Login Successful");
-//            response.setData(loginRepository.);
+
+            if (viewer != null){
+                response.setUserType(0);
+                response.setData(viewerRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
+            } else {
+                response.setUserType(1);
+                response.setData(viewerRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
+            }
 
             //Checking for birthday wishesa
 //            response.setWishBirthday(false);

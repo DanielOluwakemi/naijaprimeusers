@@ -6,14 +6,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document
-public class Login {
+public class Staff {
 
     @Id
     private String id;
     private String username;
-    private String password;
-    private int userType; // 0 for viewer, 1 for Content creator, 2 for staff
-    private int deleteFlag;
+    private String email;
+    private String fullName;
+    private String age;
     private long createdTime;
-    private String token;
+    private int deleteFlag;
 }

@@ -9,5 +9,6 @@ public class LoginResponseDTO {
     private String status;
     private String message;
     private Object data;
+    private int userType;
     private boolean wishBirthday;
 }
