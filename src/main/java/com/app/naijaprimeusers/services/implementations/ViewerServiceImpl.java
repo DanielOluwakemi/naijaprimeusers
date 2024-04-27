@@ -1,7 +1,11 @@
 package com.app.naijaprimeusers.services.implementations;
 
 import com.app.naijaprimeusers.dtos.ResponseDTO;
+import com.app.naijaprimeusers.entities.ContentCreator;
+import com.app.naijaprimeusers.entities.Staff;
 import com.app.naijaprimeusers.entities.Viewer;
+import com.app.naijaprimeusers.repositories.ContentCreatorRepository;
+import com.app.naijaprimeusers.repositories.StaffRepository;
 import com.app.naijaprimeusers.repositories.ViewerRepository;
 import com.app.naijaprimeusers.services.ViewerService;
 import com.app.naijaprimeusers.utils.DateConverter;
@@ -20,6 +24,10 @@ public class ViewerServiceImpl implements ViewerService {
     
     @Autowired
     ViewerRepository viewerRepository;
+    @Autowired
+    StaffRepository staffRepository;
+    @Autowired
+    ContentCreatorRepository contentCreatorRepository;
     @Autowired
     EmailValidator emailValidator;
     @Autowired
@@ -45,7 +53,9 @@ public class ViewerServiceImpl implements ViewerService {
 
         try {
             Viewer viewer1 = viewerRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
-            if(viewer1 != null) {
+            Staff staff = staffRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
+            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
+            if(viewer1 != null || staff != null || creator != null) {
                 response.setStatus("ACCOUNT_EXIST");
                 response.setMessage("Account Already Exists!");
                 response.setData(viewer1);

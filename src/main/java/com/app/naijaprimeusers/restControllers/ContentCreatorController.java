@@ -64,7 +64,7 @@ public class ContentCreatorController {
     }
 
     @RequestMapping(value = "/get/{ids}", method = RequestMethod.GET)
-    @Operation(description = "This Service gets content creator by ids on naijaprimeusers")
+    @Operation(description = "This Service gets a content creator by ids on naijaprimeusers")
     public ResponseEntity<List<?>> get(@PathVariable List<String> ids){
         log.info("API Call To Fetch Content Creator");
 
@@ -78,11 +78,11 @@ public class ContentCreatorController {
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     @Operation(description = "This Service gets all content creators on naijaprimeusers")
-    public ResponseEntity<List<?>> getAll(@PathVariable List<String> ids){
+    public ResponseEntity<List<?>> getAll(){
         log.info("API Call To Fetch All Viewers");
 
         try {
-            return new ResponseEntity<>(contentCreatorService.getByIds(ids), HttpStatus.OK);
+            return new ResponseEntity<>(contentCreatorService.getAll(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Exception occurred " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

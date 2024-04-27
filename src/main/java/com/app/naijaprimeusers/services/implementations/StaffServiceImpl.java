@@ -1,9 +1,12 @@
 package com.app.naijaprimeusers.services.implementations;
 
 import com.app.naijaprimeusers.dtos.ResponseDTO;
+import com.app.naijaprimeusers.entities.ContentCreator;
 import com.app.naijaprimeusers.entities.Staff;
-import com.app.naijaprimeusers.entities.Staff;
+import com.app.naijaprimeusers.entities.Viewer;
+import com.app.naijaprimeusers.repositories.ContentCreatorRepository;
 import com.app.naijaprimeusers.repositories.StaffRepository;
+import com.app.naijaprimeusers.repositories.ViewerRepository;
 import com.app.naijaprimeusers.services.StaffService;
 import com.app.naijaprimeusers.utils.DateConverter;
 import com.app.naijaprimeusers.utils.EmailValidator;
@@ -21,6 +24,10 @@ public class StaffServiceImpl implements StaffService {
 
     @Autowired
     StaffRepository staffRepository;
+    @Autowired
+    ContentCreatorRepository contentCreatorRepository;
+    @Autowired
+    ViewerRepository viewerRepository;
     @Autowired
     EmailValidator emailValidator;
     @Autowired
@@ -45,11 +52,13 @@ public class StaffServiceImpl implements StaffService {
         }
 
         try {
-            Staff viewer1 = staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
-            if(viewer1 != null) {
+            Staff staff1 = staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
+            Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
+            if(staff1 != null || contentCreator != null || viewer != null) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists!");
-                response.setData(viewer1);
+                response.setMessage("Account Already Exists For This Email!");
+                response.setData(contentCreator);
                 return response;
             }
 

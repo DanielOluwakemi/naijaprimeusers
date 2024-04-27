@@ -13,7 +13,10 @@ public class Login {
     private String username;
     private String password;
     private int userType; // 0 for viewer, 1 for Content creator, 2 for staff
-    private int deleteFlag;
+    private int code;
+    private long codeCreatedTime;
+    private boolean verified;
     private long createdTime;
     private String token;
+    private int deleteFlag;
 }

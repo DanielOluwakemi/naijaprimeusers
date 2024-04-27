@@ -8,6 +8,6 @@ import com.app.naijaprimeusers.entities.Login;
 public interface LoginService {
 
     ResponseDTO add(Login login);
-    ResponseDTO verifyCode(Login login, int code);
+    ResponseDTO verifyCode(String id, int code);
     LoginResponseDTO login(AccessDTO accessDTO);
 }
