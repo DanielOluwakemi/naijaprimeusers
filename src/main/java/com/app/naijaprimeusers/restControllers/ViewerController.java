@@ -2,7 +2,6 @@ package com.app.naijaprimeusers.restControllers;
 
 import com.app.naijaprimeusers.dtos.ResponseDTO;
 import com.app.naijaprimeusers.entities.Viewer;
-import com.app.naijaprimeusers.entities.Viewer;
 import com.app.naijaprimeusers.services.ViewerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,20 +1,19 @@
 package com.app.naijaprimeusers.configs;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+
+@Configuration
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customConfiguration() {
-        return new OpenAPI()
-                .components(new Components())
-                .info(new Info().title("Naija Prime Users")
-                        .description("This Service Manages Users On Naija Prime."));
+    public GroupedOpenApi controllerApi() {
+        return GroupedOpenApi.builder()
+                .group("naija-prime-apis")
+                .displayName("Naija Prime Rest Apis")
+                .packagesToScan("com.app.naijaprimeusers.restControllers") // Specify the package to scan
+                .build();}
 
-    }
 }

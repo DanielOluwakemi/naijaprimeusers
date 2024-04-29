@@ -147,17 +147,17 @@ public class LoginServiceImpl implements LoginService {
             response.setMessage("Login doesn't exist");
             return response;
         }
-        long timestamp = login.get().getCodeCreatedTime();
-        long expirationTime = timestamp + ((long) Constants.CODE_DURATION * 60 * 1000);
-        if (dateConverter.getCurrentTimestamp() >= expirationTime) {
-            response.setStatus("CODE_EXPIRED");
-            response.setStatus("Code is incorrect!");
-            return response;
-        }
+//        long timestamp = login.get().getCodeCreatedTime();
+//        long expirationTime = timestamp + ((long) Constants.CODE_DURATION * 60 * 1000);
+//        if (dateConverter.getCurrentTimestamp() >= expirationTime) {
+//            response.setStatus("CODE_EXPIRED");
+//            response.setStatus("Code has expired. Generate a new code");
+//            return response;
+//        }
 
-        if (login.get().getCode() == code) {
+        if (login.get().getCode() != code) {
             response.setStatus("INCORRECT_CODE");
-            response.setStatus("Code has expired. Generate a new code");
+            response.setStatus("Code is incorrect!");
             return response;
         } else {
             login.get().setVerified(true);
