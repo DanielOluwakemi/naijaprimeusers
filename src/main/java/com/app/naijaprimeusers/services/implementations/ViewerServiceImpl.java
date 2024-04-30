@@ -52,12 +52,12 @@ public class ViewerServiceImpl implements ViewerService {
         }
 
         try {
-            Viewer viewer1 = viewerRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
-            Staff staff = staffRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
-            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
+            Viewer viewer1 = viewerRepository.findByUsernameAndDeleteFlag(viewer.getUsername(), 0);
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(viewer.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByUsernameAndDeleteFlag(viewer.getUsername(), 0);
             if(viewer1 != null || staff != null || creator != null) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists!");
+                response.setMessage("Account Already Exists For this Username!");
                 response.setData(viewer1);
                 return response;
             }
@@ -68,7 +68,7 @@ public class ViewerServiceImpl implements ViewerService {
 
             response.setStatus("SUCCESS");
             response.setMessage("Added Viewer Successfully");
-            response.setData(viewerRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0));
+            response.setData(viewerRepository.findByUsernameAndDeleteFlag(viewer.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Adding Viewer "+e);
@@ -97,7 +97,7 @@ public class ViewerServiceImpl implements ViewerService {
         }
 
         try {
-            Viewer viewer1 = viewerRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0);
+            Viewer viewer1 = viewerRepository.findByUsernameAndDeleteFlag(viewer.getEmail(), 0);
             if(viewer1 == null) {
                 response.setStatus("ACCOUNT_NONEXIST");
                 response.setMessage("Account Does Not Exist!");
@@ -112,7 +112,7 @@ public class ViewerServiceImpl implements ViewerService {
             viewerRepository.save(viewer);
             response.setStatus("SUCCESS");
             response.setMessage("Updated Viewer Successfully");
-            response.setData(viewerRepository.findByEmailAndDeleteFlag(viewer.getEmail(), 0));
+            response.setData(viewerRepository.findByUsernameAndDeleteFlag(viewer.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Updating Viewer "+e);

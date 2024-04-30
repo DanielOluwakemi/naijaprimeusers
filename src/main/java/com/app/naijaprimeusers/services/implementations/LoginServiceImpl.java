@@ -60,11 +60,6 @@ public class LoginServiceImpl implements LoginService {
             response.setMessage("Fill Empty Textfield(s)");
             return response;
         }
-        if(!emailValidator.validate(login.getUsername())) {
-            response.setStatus("EMAIL_INVALID");
-            response.setMessage("Email Is Invalid!");
-            return response;
-        }
 
         try {
             Login log = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(login.getUsername(), 0);
@@ -92,16 +87,24 @@ public class LoginServiceImpl implements LoginService {
             response.setMessage("Added Login Successfully");
             response.setData(loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(login.getUsername(), 0));
 
-            Staff staff = staffRepository.findByEmailAndDeleteFlag(login.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(login.getUsername(), 0);
-            Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(login.getUsername(), 0);
-            String fullName;
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0);
+            String fullName = null;
+            String email = null;
             if (staff != null) {
                 fullName = staff.getFullName();
+                email = staff.getEmail();
             } else if (creator != null) {
                 fullName = creator.getFullName();
-            } else {
+                email = creator.getEmail();
+            } else if (viewer != null){
                 fullName = viewer.getFullName();
+                email = viewer.getEmail();
+            } else {
+                response.setStatus("EMAIL_NONEXISTS");
+                response.setMessage("Account has not been created for this email");
+                return response;
             }
 
             //Sending Email
@@ -112,9 +115,9 @@ public class LoginServiceImpl implements LoginService {
             MailDTO mailDTO = new MailDTO();
             mailDTO.setMsg(template.getTemplate(1, messageDTO));
             mailDTO.setSubject("Naija Prime registration - Verify Email");
-            mailDTO.setTo(login.getUsername());
+            mailDTO.setTo(email);
             mailDTO.setFrom(apis.getNoReply());
-            mailDTO.setReceiverName(login.getUsername());
+            mailDTO.setReceiverName(email);
 
             goMailerService.sendEmail(mailDTO);
 
@@ -136,24 +139,25 @@ public class LoginServiceImpl implements LoginService {
         log.info("Verifying six digit code");
         ResponseDTO response = new ResponseDTO();
 
-        if(id == null || id.isBlank() || code < 0) {
+        if (id == null || id.isBlank() || code <= 0) {
             response.setStatus("EMPTY_TEXTFIELD");
             response.setMessage("Fill Empty Textfield(s)");
             return response;
         }
+        try {
         Optional<Login> login = loginRepository.findById(id);
         if (login.isEmpty()) {
             response.setStatus("LOGIN_NONEXISTS");
             response.setMessage("Login doesn't exist");
             return response;
         }
-//        long timestamp = login.get().getCodeCreatedTime();
-//        long expirationTime = timestamp + ((long) Constants.CODE_DURATION * 60 * 1000);
-//        if (dateConverter.getCurrentTimestamp() >= expirationTime) {
-//            response.setStatus("CODE_EXPIRED");
-//            response.setStatus("Code has expired. Generate a new code");
-//            return response;
-//        }
+        long timestamp = login.get().getCodeCreatedTime();
+        long expirationTime = timestamp + ((long) Constants.CODE_DURATION * 60 * 1000);
+        if (dateConverter.getCurrentTimestamp() >= expirationTime) {
+            response.setStatus("CODE_EXPIRED");
+            response.setStatus("Code has expired. Generate a new code");
+            return response;
+        }
 
         if (login.get().getCode() != code) {
             response.setStatus("INCORRECT_CODE");
@@ -168,6 +172,84 @@ public class LoginServiceImpl implements LoginService {
         response.setMessage("Verified Email Successfully");
         response.setData(dbLogin);
         return response;
+
+      }catch(Exception e) {
+            log.error("Error While Verifying Email " + e);
+            response.setStatus("FAILURE");
+            response.setMessage("Verifying Email Failed");
+            return response;
+        }
+    }
+
+    @Override
+    public ResponseDTO resendCode(String id) {
+        log.info("Resending Code");
+        ResponseDTO response = new ResponseDTO();
+
+        if(id == null || id.isBlank()) {
+            response.setStatus("EMPTY_TEXTFIELD");
+            response.setMessage("Fill Empty Textfield(s)");
+            return response;
+        }
+
+        try {
+            Optional<Login> login = loginRepository.findById(id);
+            if (login.isEmpty()) {
+                response.setStatus("LOGIN_NONEXISTS");
+                response.setMessage("Login doesn't exist");
+                return response;
+            }
+            if (login.get().isVerified()) {
+                response.setStatus("ACCOUNT_ALREADY_VERIFIED");
+                response.setMessage("Account has already been verified");
+                return response;
+            }
+            Login account = login.get();
+            int sixDigitCode = codeGenerator.generateRandomSixDigitCode();
+            account.setCodeCreatedTime(dateConverter.getCurrentTimestamp());
+            account.setCode(sixDigitCode);
+            account.setVerified(false);
+
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(account.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByUsernameAndDeleteFlag(account.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(account.getUsername(), 0);
+            String fullName;
+            String email;
+            if (staff != null) {
+                fullName = staff.getFullName();
+                email = staff.getEmail();
+            } else if (creator != null) {
+                fullName = creator.getFullName();
+                email = creator.getEmail();
+            } else {
+                fullName = viewer.getFullName();
+                email = viewer.getEmail();
+            }
+
+            //Sending Email
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setFullName(fullName);
+            messageDTO.setCode(sixDigitCode);
+
+            MailDTO mailDTO = new MailDTO();
+            mailDTO.setMsg(template.getTemplate(1, messageDTO));
+            mailDTO.setSubject("Naija Prime registration - Verify Email");
+            mailDTO.setTo(email);
+            mailDTO.setFrom(apis.getNoReply());
+            mailDTO.setReceiverName(email);
+
+            goMailerService.sendEmail(mailDTO);
+
+            response.setStatus("SUCCESS");
+            response.setMessage("Resent Code Successfully");
+            response.setData(loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(account.getUsername(), 0));
+            return response;
+        } catch(Exception e) {
+            log.error("Error While Resending Code " + e);
+            response.setStatus("FAILURE");
+            response.setMessage("Resending Code Failed");
+            return response;
+        }
     }
 
     @Override
@@ -185,9 +267,9 @@ public class LoginServiceImpl implements LoginService {
         try {
             //Check if user exist
             Login login = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(accessDTO.getUsername(), 0);
-            Staff staff = staffRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
-            Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
             if((login == null || staff == null) && (login == null || creator == null) && (login == null || viewer == null)) {
                 response.setStatus("ACCOUNT_NONEXISTS");
                 response.setMessage("User Account Does Not Exist!");
@@ -215,14 +297,14 @@ public class LoginServiceImpl implements LoginService {
 
             if (staff != null){
                 response.setUserType(2);
-                response.setData(staffRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
+                response.setData(staffRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0));
             }
             else if (creator != null){
                 response.setUserType(1);
-                response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
+                response.setData(contentCreatorRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0));
             } else {
                 response.setUserType(0);
-                response.setData(viewerRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
+                response.setData(viewerRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0));
             }
 
             //Checking for birthday wishesa
@@ -243,6 +325,87 @@ public class LoginServiceImpl implements LoginService {
 //            loginHistoryRepository.save(history);
 
 //            headers.setHeader("token-1", login.getToken());
+            return response;
+        }catch(Exception e) {
+            log.error("Error While Do Login " + e);
+            response.setStatus("FAILURE");
+            response.setMessage("Login Failed");
+            return response;
+        }
+    }
+
+    @Override
+    public ResponseDTO updateEmail(ResetEmailDTO resetEmailDTO) {
+        log.info("Updating Username");
+        ResponseDTO response = new ResponseDTO();
+
+        //Validation
+        if(resetEmailDTO.getEmail() == null || resetEmailDTO.getEmail().isBlank() || resetEmailDTO.getNewEmail() == null || resetEmailDTO.getNewEmail().isBlank() ||
+           resetEmailDTO.getUsername() == null || resetEmailDTO.getUsername().isBlank()) {
+            response.setStatus("EMPTY_TEXTFIELD");
+            response.setMessage("Fill Empty Textfield(s)");
+            return response;
+        }
+
+        try {
+            //Check if user exist
+            Login account = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(resetEmailDTO.getUsername(), 0);
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByUsernameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
+            if((account == null || staff == null) && (account == null || creator == null) && (account == null || viewer == null)) {
+                response.setStatus("ACCOUNT_NONEXISTS");
+                response.setMessage("User Account Does Not Exist!");
+                return response;
+            }
+            if (!account.isVerified()) {
+                response.setStatus("ACCOUNT_NOT_VERIFIED");
+                response.setMessage("Check your email for the code to verify your email!");
+                return response;
+            }
+            if(!emailValidator.validate(resetEmailDTO.getNewEmail())) {
+                response.setStatus("EMAIL_INVALID");
+                response.setMessage("Email Is Invalid!");
+                return response;
+            }
+
+            account.setUsername(resetEmailDTO.getNewEmail());
+            String fullName;
+            if (account.getUserType() == 0) {
+                viewer.setEmail(resetEmailDTO.getNewEmail());
+                fullName = viewer.getFullName();
+            } else if (account.getUserType() == 1) {
+                creator.setEmail(resetEmailDTO.getNewEmail());
+                fullName = creator.getFullName();
+            } else {
+                staff.setEmail(resetEmailDTO.getNewEmail());
+                fullName = staff.getFullName();
+            }
+            account.setCreatedTime(dateConverter.getCurrentTimestamp());
+
+            int sixDigitCode = codeGenerator.generateRandomSixDigitCode();
+            account.setCodeCreatedTime(dateConverter.getCurrentTimestamp());
+            account.setCode(sixDigitCode);
+            account.setVerified(false);
+            loginRepository.save(account);
+
+            //Sending Email
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setFullName(fullName);
+            messageDTO.setCode(sixDigitCode);
+
+            MailDTO mailDTO = new MailDTO();
+            mailDTO.setMsg(template.getTemplate(2, messageDTO));
+            mailDTO.setSubject("Naija Prime Reset Email - Verify New Email");
+            mailDTO.setTo(resetEmailDTO.getNewEmail());
+            mailDTO.setFrom(apis.getNoReply());
+            mailDTO.setReceiverName(resetEmailDTO.getNewEmail());
+
+            goMailerService.sendEmail(mailDTO);
+
+            response.setStatus("SUCCESS");
+            response.setMessage("Reset Email Successfully, Check Your New Email To Verify it");
+
             return response;
         }catch(Exception e) {
             log.error("Error While Do Login " + e);

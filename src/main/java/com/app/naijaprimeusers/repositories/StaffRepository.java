@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface StaffRepository extends MongoRepository<Staff, String> {
 
-    Staff findByEmailAndDeleteFlag(String email, int deleteFlag);
+    Staff findByUsernameAndDeleteFlag(String username, int deleteFlag);
 
     List<Staff> findByIdIn(List<String> ids);
 }

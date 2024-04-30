@@ -15,6 +15,13 @@ public class MessageTemplates {
             msg += "<p>Verification Code: " + messageDTO.getCode() + "<p>";
             msg += "<p>Please enter this code on our website to verify your email address and activate your account. Note that this code will expire in 30 minutes<p>";
             msg += "<p>If you did not request this verification or have any questions, please contact our support team at naijaprimesupport@gmail.com.</p>";
+        } else if (type == 2) {
+            msg += "<p>Hello " + messageDTO.getFullName() + ",</p>";
+            msg += "<p>You have successfully changed your email</p>";
+            msg += "<p>To complete your change of email, please use the following verification code:</p>";
+            msg += "<p>Verification Code: " + messageDTO.getCode() + "<p>";
+            msg += "<p>Please enter this code on our website to verify your email address and activate your account. Note that this code will expire in 30 minutes<p>";
+            msg += "<p>If you did not request this verification or have any questions, please contact our support team at naijaprimesupport@gmail.com.</p>";
         }
         msg += "<p><br>Regards,</p>";
         msg += "<p>Naija Prime Team</p>";

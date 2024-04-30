@@ -52,12 +52,12 @@ public class StaffServiceImpl implements StaffService {
         }
 
         try {
-            Staff staff1 = staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
-            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
-            Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
+            Staff staff1 = staffRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
             if(staff1 != null || contentCreator != null || viewer != null) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists For This Email!");
+                response.setMessage("Account Already Exists For This Username!");
                 response.setData(contentCreator);
                 return response;
             }
@@ -68,7 +68,7 @@ public class StaffServiceImpl implements StaffService {
 
             response.setStatus("SUCCESS");
             response.setMessage("Added Staff Successfully");
-            response.setData(staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0));
+            response.setData(staffRepository.findByUsernameAndDeleteFlag(staff.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Adding Staff "+e);
@@ -98,7 +98,7 @@ public class StaffServiceImpl implements StaffService {
         }
 
         try {
-            Staff staff1 = staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0);
+            Staff staff1 = staffRepository.findByUsernameAndDeleteFlag(staff.getEmail(), 0);
             if(staff1 == null) {
                 response.setStatus("ACCOUNT_NONEXIST");
                 response.setMessage("Account Does Not Exist!");
@@ -113,7 +113,7 @@ public class StaffServiceImpl implements StaffService {
             staffRepository.save(staff);
             response.setStatus("SUCCESS");
             response.setMessage("Updated staff Successfully");
-            response.setData(staffRepository.findByEmailAndDeleteFlag(staff.getEmail(), 0));
+            response.setData(staffRepository.findByUsernameAndDeleteFlag(staff.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Updating staff "+e);

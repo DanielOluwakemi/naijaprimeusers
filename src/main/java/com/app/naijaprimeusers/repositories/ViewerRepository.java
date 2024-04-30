@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ViewerRepository extends MongoRepository<Viewer, String> {
-    Viewer findByEmailAndDeleteFlag(String email, int deleteFlag);
+    Viewer findByUsernameAndDeleteFlag(String username, int deleteFlag);
 
     List<Viewer> findByIdIn(List<String> ids);
 }

@@ -52,12 +52,12 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         }
 
         try {
-            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
-            Viewer viewer = viewerRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
-            Staff staff = staffRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
+            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
+            Staff staff = staffRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
             if(contentCreator != null || viewer != null || staff != null) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists For This Email!");
+                response.setMessage("Account Already Exists For This Username!");
                 response.setData(contentCreator);
                 return response;
             }
@@ -68,7 +68,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
 
             response.setStatus("SUCCESS");
             response.setMessage("Added Content creator Successfully");
-            response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0));
+            response.setData(contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Adding Content creator "+e);
@@ -98,7 +98,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         }
 
         try {
-            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0);
             if(contentCreator == null) {
                 response.setStatus("ACCOUNT_NONEXIST");
                 response.setMessage("Account Does Not Exist!");
@@ -113,7 +113,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
             contentCreatorRepository.save(creator);
             response.setStatus("SUCCESS");
             response.setMessage("Updated Content creator Successfully");
-            response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0));
+            response.setData(contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Updating Content creator "+e);

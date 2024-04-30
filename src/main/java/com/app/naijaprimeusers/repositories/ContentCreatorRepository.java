@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ContentCreatorRepository extends MongoRepository<ContentCreator, String> {
 
-    ContentCreator findByEmailAndDeleteFlag(String email, int deleteFlag);
+    ContentCreator findByUsernameAndDeleteFlag(String username, int deleteFlag);
 
     List<ContentCreator> findByIdIn(List<String> ids);
 }

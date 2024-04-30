@@ -2,6 +2,7 @@ package com.app.naijaprimeusers.restControllers;
 
 import com.app.naijaprimeusers.dtos.AccessDTO;
 import com.app.naijaprimeusers.dtos.LoginResponseDTO;
+import com.app.naijaprimeusers.dtos.ResetEmailDTO;
 import com.app.naijaprimeusers.dtos.ResponseDTO;
 import com.app.naijaprimeusers.entities.Login;
 import com.app.naijaprimeusers.services.LoginService;
@@ -64,6 +65,26 @@ public class LoginController {
         }
     }
 
+    @RequestMapping(value = "/resendCode/{id}", method = RequestMethod.POST)
+    @Operation(description = "This Service resends code to email")
+    public ResponseEntity<?> resendCode(@PathVariable String id) {
+        log.info("API Call To Resend Code");
+
+        try {
+            ResponseDTO response = loginService.resendCode(id);
+            if (response.getStatus().equals("SUCCESS")) {
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (response.getStatus().equals("EMPTY_TEXTFIELD")) {
+                return new ResponseEntity<>(response, HttpStatus.PRECONDITION_REQUIRED);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.PRECONDITION_FAILED);
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred " + e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @Operation(description = "This Service initiates a User login")
     public ResponseEntity<?> doLogin(@RequestBody AccessDTO accessDTO) {
@@ -71,6 +92,26 @@ public class LoginController {
 
         try {
             LoginResponseDTO response = loginService.login(accessDTO);
+            if (response.getStatus().equals("SUCCESS")) {
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (response.getStatus().equals("EMPTY_TEXTFIELD")) {
+                return new ResponseEntity<>(response, HttpStatus.PRECONDITION_REQUIRED);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.PRECONDITION_FAILED);
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred " + e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/resetEmail", method = RequestMethod.POST)
+    @Operation(description = "This Service resets email")
+    public ResponseEntity<?> updateEmail(@RequestBody ResetEmailDTO resetEmailDTO) {
+        log.info("API Call To Reset Email");
+
+        try {
+            ResponseDTO response = loginService.updateEmail(resetEmailDTO);
             if (response.getStatus().equals("SUCCESS")) {
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else if (response.getStatus().equals("EMPTY_TEXTFIELD")) {
