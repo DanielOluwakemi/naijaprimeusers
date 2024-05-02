@@ -53,12 +53,10 @@ public class StaffServiceImpl implements StaffService {
 
         try {
             Staff staff1 = staffRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
-            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(staff.getUsername(), 0);
-            if(staff1 != null || contentCreator != null || viewer != null) {
+            if(staff1 != null || viewer != null) {
                 response.setStatus("ACCOUNT_EXIST");
                 response.setMessage("Account Already Exists For This Username!");
-                response.setData(contentCreator);
                 return response;
             }
 

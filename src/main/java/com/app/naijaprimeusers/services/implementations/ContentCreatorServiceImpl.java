@@ -39,8 +39,13 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         ResponseDTO response = new ResponseDTO();
 
         //Validation
-        if(creator.getEmail() == null || creator.getEmail().isBlank() || creator.getUsername() == null || creator.getUsername().isBlank() ||
-           creator.getFullName() == null || creator.getFullName().isBlank() || creator.getAge() == null || creator.getAge().isBlank()) {
+        if(creator.getEmail() == null || creator.getEmail().isBlank() || creator.getPhoneNumber() == null || creator.getPhoneNumber().isBlank() ||
+            creator.getFullName() == null || creator.getFullName().isBlank() || creator.getProdName() == null || creator.getProdName().isBlank() ||
+            creator.getFilmProdLocation() == null || creator.getFilmProdLocation().isBlank() || creator.getMembership() == null || creator.getMembership().isBlank() ||
+            creator.getAccountDetails().getFullName() == null || creator.getAccountDetails().getFullName().isBlank() || creator.getAccountDetails().getAcctNo() == null || creator.getAccountDetails().getAcctNo().isBlank() ||
+            creator.getAccountDetails().getBankDetails() == null || creator.getAccountDetails().getBankDetails().isBlank() || creator.getFile().getImageID() == null || creator.getFile().getImageID().isBlank() ||
+            creator.getFile().getImageUrl() == null || creator.getFile().getImageUrl().isBlank()
+        ) {
             response.setStatus("EMPTY_TEXTFIELD");
             response.setMessage("Fill Empty Textfield(s)");
             return response;
@@ -52,12 +57,10 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         }
 
         try {
-            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
-            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
-            Staff staff = staffRepository.findByUsernameAndDeleteFlag(creator.getUsername(), 0);
-            if(contentCreator != null || viewer != null || staff != null) {
+            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
+            if(contentCreator != null ) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists For This Username!");
+                response.setMessage("Account Already Exists For This Email!");
                 response.setData(contentCreator);
                 return response;
             }
@@ -68,7 +71,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
 
             response.setStatus("SUCCESS");
             response.setMessage("Added Content creator Successfully");
-            response.setData(contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0));
+            response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Adding Content creator "+e);
@@ -84,9 +87,12 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         ResponseDTO response = new ResponseDTO();
 
         //Validation
-        if(creator.getEmail() == null || creator.getEmail().isBlank() || creator.getUsername() == null || creator.getUsername().isBlank() ||
-                creator.getFullName() == null || creator.getFullName().isBlank() || creator.getAge() == null || creator.getAge().isBlank() ||
-                creator.getId() == null || creator.getId().isBlank()) {
+        if(creator.getEmail() == null || creator.getEmail().isBlank() || creator.getPhoneNumber() == null || creator.getPhoneNumber().isBlank() ||
+                creator.getFullName() == null || creator.getFullName().isBlank() || creator.getProdName() == null || creator.getProdName().isBlank() ||
+                creator.getFilmProdLocation() == null || creator.getFilmProdLocation().isBlank() || creator.getMembership() == null || creator.getMembership().isBlank() ||
+                creator.getAccountDetails().getFullName() == null || creator.getAccountDetails().getFullName().isBlank() || creator.getAccountDetails().getAcctNo() == null || creator.getAccountDetails().getAcctNo().isBlank() ||
+                creator.getAccountDetails().getBankDetails() == null || creator.getAccountDetails().getBankDetails().isBlank() || creator.getFile().getImageID() == null || creator.getFile().getImageID().isBlank() ||
+                creator.getFile().getImageUrl() == null || creator.getFile().getImageUrl().isBlank() || creator.getId() == null || creator.getId().isBlank()) {
             response.setStatus("EMPTY_TEXTFIELD");
             response.setMessage("Fill Empty Textfield(s)");
             return response;
@@ -98,7 +104,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         }
 
         try {
-            ContentCreator contentCreator = contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
             if(contentCreator == null) {
                 response.setStatus("ACCOUNT_NONEXIST");
                 response.setMessage("Account Does Not Exist!");
@@ -113,7 +119,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
             contentCreatorRepository.save(creator);
             response.setStatus("SUCCESS");
             response.setMessage("Updated Content creator Successfully");
-            response.setData(contentCreatorRepository.findByUsernameAndDeleteFlag(creator.getEmail(), 0));
+            response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0));
             return response;
         }catch(Exception e) {
             log.error("Error While Updating Content creator "+e);
