@@ -11,6 +11,7 @@ public class ContentCreator {
     @Id
     private String id;
     private String email;
+    private String age;
     private String phoneNumber;
     private String fullName;
     private String prodName;

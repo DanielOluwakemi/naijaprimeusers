@@ -11,6 +11,7 @@ public interface ContentCreatorRepository extends MongoRepository<ContentCreator
 
 //    ContentCreator findByUsernameAndDeleteFlag(String username, int deleteFlag);
     ContentCreator findByEmailAndDeleteFlag(String email, int deleteFlag);
+    ContentCreator findByProdNameAndDeleteFlag(String prodName, int deleteFlag);
 
     List<ContentCreator> findByIdIn(List<String> ids);
 }
