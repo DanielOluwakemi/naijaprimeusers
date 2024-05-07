@@ -88,7 +88,7 @@ public class LoginServiceImpl implements LoginService {
             response.setData(loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(login.getUsername(), 0));
 
             Staff staff = staffRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByProdNameAndDeleteFlag(login.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(login.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0);
             String fullName = null;
             String email = null;
@@ -211,7 +211,7 @@ public class LoginServiceImpl implements LoginService {
             account.setVerified(false);
 
             Staff staff = staffRepository.findByUsernameAndDeleteFlag(account.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByProdNameAndDeleteFlag(account.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(account.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(account.getUsername(), 0);
             String fullName;
             String email;
@@ -268,7 +268,7 @@ public class LoginServiceImpl implements LoginService {
             //Check if user exist
             Login login = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(accessDTO.getUsername(), 0);
             Staff staff = staffRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByProdNameAndDeleteFlag(accessDTO.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
             if((login == null || staff == null) && (login == null || creator == null) && (login == null || viewer == null)) {
                 response.setStatus("ACCOUNT_NONEXISTS");
@@ -301,7 +301,7 @@ public class LoginServiceImpl implements LoginService {
             }
             else if (creator != null){
                 response.setUserType(1);
-                response.setData(contentCreatorRepository.findByProdNameAndDeleteFlag(login.getUsername(), 0));
+                response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
             } else {
                 response.setUserType(0);
                 response.setData(viewerRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0));
@@ -351,7 +351,7 @@ public class LoginServiceImpl implements LoginService {
             //Check if user exist
             Login account = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(resetEmailDTO.getUsername(), 0);
             Staff staff = staffRepository.findByUsernameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByProdNameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
+            ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(resetEmailDTO.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(resetEmailDTO.getUsername(), 0);
             if((account == null || staff == null) && (account == null || creator == null) && (account == null || viewer == null)) {
                 response.setStatus("ACCOUNT_NONEXISTS");

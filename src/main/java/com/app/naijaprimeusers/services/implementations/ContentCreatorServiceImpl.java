@@ -107,7 +107,7 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
         }
 
         try {
-            ContentCreator contentCreator = contentCreatorRepository.findByProdNameAndDeleteFlag(creator.getProdName(), 0);
+            ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(creator.getProdName(), 0);
             if(contentCreator == null) {
                 response.setStatus("ACCOUNT_NONEXIST");
