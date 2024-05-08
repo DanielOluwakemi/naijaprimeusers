@@ -53,8 +53,7 @@ public class ViewerServiceImpl implements ViewerService {
 
         try {
             Viewer viewer1 = viewerRepository.findByUsernameAndDeleteFlag(viewer.getUsername(), 0);
-            ContentCreator creator = contentCreatorRepository.findByProdNameAndDeleteFlag(viewer.getUsername(), 0);
-            if(viewer1 != null || creator != null) {
+            if(viewer1 != null) {
                 response.setStatus("ACCOUNT_EXIST");
                 response.setMessage("Account Already Exists For this Username!");
                 response.setData(viewer1);

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface LoginRepository extends MongoRepository<Login, String> {
 
     Login findByUsernameIgnoreCaseAndDeleteFlag(String username, int deleteFlag);
+    Login findByUsernameIgnoreCaseAndUserTypeAndDeleteFlag(String username, int userType, int deleteFlag);
 }

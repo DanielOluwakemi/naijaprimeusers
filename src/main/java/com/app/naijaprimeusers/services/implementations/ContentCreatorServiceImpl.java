@@ -59,10 +59,9 @@ public class ContentCreatorServiceImpl implements ContentCreatorService {
 
         try {
             ContentCreator contentCreator = contentCreatorRepository.findByEmailAndDeleteFlag(creator.getEmail(), 0);
-            Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(creator.getProdName(), 0);
-            if(contentCreator != null || viewer != null) {
+            if(contentCreator != null) {
                 response.setStatus("ACCOUNT_EXIST");
-                response.setMessage("Account Already Exists For This Email!");
+                response.setMessage("Content Creator Account Already Exists For This Email!");
                 response.setData(contentCreator);
                 return response;
             }

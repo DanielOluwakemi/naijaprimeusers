@@ -7,6 +7,7 @@ public class AccessDTO {
 
     private String username;
     private String password;
+    private int userType;
     private String newPassword;
 }
 

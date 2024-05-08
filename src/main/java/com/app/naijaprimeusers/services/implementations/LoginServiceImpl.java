@@ -62,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
         }
 
         try {
-            Login log = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(login.getUsername(), 0);
+            Login log = loginRepository.findByUsernameIgnoreCaseAndUserTypeAndDeleteFlag(login.getUsername(), login.getUserType(), 0);
             if(log != null) {
                 response.setStatus("ACCOUNT_EXIST");
                 response.setMessage("Login Account Already Exists!");
@@ -266,7 +266,7 @@ public class LoginServiceImpl implements LoginService {
 
         try {
             //Check if user exist
-            Login login = loginRepository.findByUsernameIgnoreCaseAndDeleteFlag(accessDTO.getUsername(), 0);
+            Login login = loginRepository.findByUsernameIgnoreCaseAndUserTypeAndDeleteFlag(accessDTO.getUsername(), accessDTO.getUserType(), 0);
             Staff staff = staffRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
             ContentCreator creator = contentCreatorRepository.findByEmailAndDeleteFlag(accessDTO.getUsername(), 0);
             Viewer viewer = viewerRepository.findByUsernameAndDeleteFlag(accessDTO.getUsername(), 0);
@@ -274,6 +274,14 @@ public class LoginServiceImpl implements LoginService {
                 response.setStatus("ACCOUNT_NONEXISTS");
                 response.setMessage("User Account Does Not Exist!");
                 return response;
+            }
+            if (login.getUserType() == 1) {
+                Login creatorlogin = loginRepository.findByUsernameIgnoreCaseAndUserTypeAndDeleteFlag(accessDTO.getUsername(), 1, 0);
+                if (creatorlogin == null || creator == null) {
+                    response.setStatus("CONTENT_CREATOR_ACCOUNT_NONEXISTS");
+                    response.setMessage("Content Creator Account Does Not Exist!");
+                    return response;
+                }
             }
             if (!login.isVerified()) {
                 response.setStatus("ACCOUNT_NOT_VERIFIED");
@@ -295,11 +303,11 @@ public class LoginServiceImpl implements LoginService {
             response.setStatus("SUCCESS");
             response.setMessage("Login Successful");
 
-            if (staff != null){
+            if (accessDTO.getUserType() == 2){
                 response.setUserType(2);
                 response.setData(staffRepository.findByUsernameAndDeleteFlag(login.getUsername(), 0));
             }
-            else if (creator != null){
+            else if (accessDTO.getUserType() == 1){
                 response.setUserType(1);
                 response.setData(contentCreatorRepository.findByEmailAndDeleteFlag(login.getUsername(), 0));
             } else {
