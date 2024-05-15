@@ -102,8 +102,8 @@ public class LoginServiceImpl implements LoginService {
                 fullName = viewer.getFullName();
                 email = viewer.getEmail();
             } else {
-                response.setStatus("EMAIL_NONEXISTS");
-                response.setMessage("Account has not been created for this email");
+                response.setStatus("USERNAME_NONEXISTS");
+                response.setMessage("Account has not been created for this username or email");
                 return response;
             }
 
