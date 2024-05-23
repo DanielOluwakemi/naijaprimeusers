@@ -24,6 +24,6 @@ public class APIs {
     private String s3RegionName;
     @Value("${s3.bucket.name}")
     private String s3BucketName;
-    @Value("${aws.region}")
-    private String awsRegion;
+//    @Value("${aws.region}")
+//    private String awsRegion;
 }
